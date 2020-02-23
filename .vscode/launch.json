@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "fc/webpage-notifier/addPage",
+            "type": "node",
+            "request": "attach",
+            "address": "localhost",
+            "port": 3000,
+            "localRoot": "/Users/haoda/github/webpage-notifier",
+            "remoteRoot": "/code",
+            "protocol": "inspector",
+            "stopOnEntry": false
+        }
+    ]
+}

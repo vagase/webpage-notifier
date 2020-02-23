@@ -1,0 +1,9 @@
+templates:
+  template.yml:
+    webpage-notifier:
+      addPage:
+        event: default_evt
+        events:
+          default_evt:
+            type: file
+            value: webpage-notifier/addPage/event.evt

@@ -1,0 +1,20 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Transform: 'Aliyun::Serverless-2018-04-03'
+Resources:
+  webpage-notifier:
+    Type: 'Aliyun::Serverless::Service'
+    Properties:
+      Description: 'notify webpage changes'
+    addPage:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: src/functions/addPage.index
+        CodeUri: './'
+        Description: 'add page to notify'
+        Runtime: nodejs10
+      Events:
+        http:
+          Type: HTTP
+          Properties:
+            AuthType: ANONYMOUS
+            Methods: ['POST']
