@@ -3,7 +3,8 @@ const MongoDB = require('mongodb');
 bluebird.promisifyAll(MongoDB);
 
 const MongoClient = require('mongodb').MongoClient;
-const mongoIndexes = require('./mongo-indexes');
+const config = require('./config');
+const path = require('path');
 
 const url = 'mongodb://192.168.50.9:27017';
 const dbName = 'webpage-notifier';
@@ -16,12 +17,18 @@ async function mongoSetup(client) {
     const db = client.db(dbName);
 
     const createIndexes = async () => {
+        const conf = config.parse(path.join(__dirname, 'mongo.config.json'));
+        const mongoIndexes = conf.indexes;
         const collectionNames = Object.keys(mongoIndexes);
 
         for (let collectionName of collectionNames) {
             const collection  = db.collection(collectionName);
             const indexes = mongoIndexes[collectionName];
-            await collection.createIndexes(indexes)
+            const ret = await collection.createIndexes(indexes.map(index => {
+                return {key: index}
+            } ));
+            
+            console.info(`mongo create indexes:`, ret);
         }
     }
 

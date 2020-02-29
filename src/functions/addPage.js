@@ -13,11 +13,13 @@ exports.index = httpHandler(
     async function (request, response, context) {    
         const body = await getRequestBody(request);
         const url = body.url;
+        const email = body.email;
         
         const sites = await mongo.collection("sites");
-        const ret = await sites.insertOne({
-            url
-        });
+        const ret = await sites.updateOne(
+            { url, email },
+            { $set: {url, email} }, 
+            { upsert: true });
 
         return body;
     }

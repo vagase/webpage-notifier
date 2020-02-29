@@ -1,0 +1,8 @@
+{
+    "indexes": {
+        "sites": [
+            {"url": 1},
+            {"email": 1}
+        ]
+    }
+}
