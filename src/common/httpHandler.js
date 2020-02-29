@@ -40,25 +40,25 @@ function writeResponseError(response, httpCode, errorCode, errorDescription) {
  * @param {*} schema: use joi to validate request payload, supply NULL to skip validation
  * @param {*} handler 
  */
-function httpHandler (schema, handler) {
+function httpHandler (validationSchema, handler) {
     return async (request, response, context) => {
-        if (schema) {
-            let data = null;
-            if (request.method === "POST" || request === "PUT") {
-                data = await jsonBody(request, {cache: true});
-            }
-            else {
-                data = request.queries;
-            }
-
-            const {error} =  schema.validate(data);
-            if (error) {
-                writeResponseError(response, 400, -1, error.message);
-                return;
-            }
-        };
-
         try {
+            if (validationSchema) {
+                let data = null;
+                if (request.method === "POST" || request === "PUT") {
+                    data = await getRequestBody(request);
+                }
+                else {
+                    data = request.queries;
+                }
+
+                const {error} =  validationSchema.validate(data);
+                if (error) {
+                    writeResponseError(response, 400, -1, error.message);
+                    return;
+                }
+            };
+
             const json = await handler(request, response, context);
             writeResponseSuccess(response, json);
         }
@@ -80,7 +80,12 @@ function httpHandler (schema, handler) {
  * @param {*} requset 
  */
 async function getRequestBody(request) {
-    return jsonBody(request, {cache: true})
+    try {
+        return await jsonBody(request, {cache: true})
+    }
+    catch (e) {
+        throw new ClientError(-2, "invalid json for request body", e);
+    }
 }
 
 exports.ClientError = ClientError;

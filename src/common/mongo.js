@@ -5,7 +5,7 @@ bluebird.promisifyAll(MongoDB);
 const MongoClient = require('mongodb').MongoClient;
 const mongoIndexes = require('./mongo-indexes');
 
-const url = 'mongodb://192.168.50.96:27017';
+const url = 'mongodb://192.168.50.9:27017';
 const dbName = 'webpage-notifier';
 
 /** 
