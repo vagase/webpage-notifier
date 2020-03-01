@@ -8,3 +8,17 @@ exports.addOne = async (siteId, format, payload) => {
 
     return ret.insertedId;
 }
+
+exports.findLatestTwoHistoriesForSiteId = async (siteId) => {
+    const crawlHistories = await mongo.collection("crawl_histories");
+
+    const record = await crawlHistories.find(
+        { siteId },
+        {
+            sort: {createdAt: -1},
+            limit: 2
+        }
+    ).toArray();
+
+    return record;
+}

@@ -11,12 +11,8 @@ const validationSchema = Joi.object( {
     format: Joi.string().valid('', "text", "html")
 });
 
-const crawlPage = async (url, selector, format = 'text') => {
+const crawlPage = async (url, selector, selectorType, format = 'text') => {
     console.group();
-
-    if (!format) {
-        format = 'text';
-    }
 
     try {
         console.debug(`start crawl page: ${url} [${selector}]`);
@@ -41,7 +37,13 @@ const crawlPage = async (url, selector, format = 'text') => {
         const response = await page.goto(url);
 
         console.debug('query selector...');
-        const element = await page.waitForSelector(selector);
+        let element;
+        if (selectorType === 'xpath') {
+            element = await page.waitForXPath(selector);
+        }
+        else {
+            element = await page.waitForSelector(selector);
+        }
         
         let result;
         if (format === 'text') {
@@ -68,6 +70,15 @@ const crawlPage = async (url, selector, format = 'text') => {
     }
 };
 
+const checkChanges = async (siteId) => {
+    const histories = await CrawlHistory.findLatestTwoHistoriesForSiteId(siteId);
+    if (histories.length !== 2) {
+        return true;
+    }
+
+    return histories[0].payload !== histories[1].payload;
+};
+
 exports.index = httpHandler(
     validationSchema,
     async function (request, response, context) {    
@@ -78,9 +89,15 @@ exports.index = httpHandler(
         const site = await Site.findOneById(siteId);
         const url = site.url;
         const selector = site.selector;
+        const selectorType = site.selectorType;
 
-        const payload = await crawlPage(url, selector, format);
-        const id = await CrawlHistory.addOne(siteId, format, payload);
-        return {id};
+        const payload = await crawlPage(url, selector, selectorType, format);
+        const newRecordId = await CrawlHistory.addOne(siteId, format, payload);
+        const changed = await checkChanges(siteId);
+        
+        return {
+            new_history_id: newRecordId,
+            changed,
+        };
     }
 );

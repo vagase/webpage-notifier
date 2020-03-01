@@ -1,12 +1,17 @@
 const mongo = require("../common/mongo");
 const {ClientError} = require('../common/error');
 
-// return document id
-exports.addOne = async (url, selector, email) => {
+
+/**
+ * @selectorType: css-selector or xpath
+ * 
+ * return document id
+ */
+exports.addOne = async (url, selector, selectorType, email) => {
     const sites = await mongo.collection("sites");
     const ret = await sites.findOneAndUpdate(
-        { url, selector, email },
-        { $set: {url, selector, email} }, 
+        { url, selector, selectorType, email },
+        { $set: {email} }, 
         { 
             upsert: true,
             returnOriginal: false,
