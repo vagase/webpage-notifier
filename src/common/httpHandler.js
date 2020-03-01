@@ -52,7 +52,7 @@ function httpHandler (validationSchema, handler) {
                     data = request.queries;
                 }
 
-                const {error} =  validationSchema.validate(data);
+                const {error} = validationSchema.validate(data);
                 if (error) {
                     writeResponseError(response, 400, -1, error.message);
                     return;

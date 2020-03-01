@@ -18,3 +18,17 @@ Resources:
           Properties:
             AuthType: ANONYMOUS
             Methods: ['POST']
+    
+    crawl:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: src/functions/crawl.index
+        CodeUri: './'
+        Description: 'crawl page'
+        Runtime: nodejs10
+      Events:
+        http:
+          Type: HTTP
+          Properties:
+            AuthType: ANONYMOUS
+            Methods: ['POST']

@@ -5,6 +5,8 @@ bluebird.promisifyAll(MongoDB);
 const MongoClient = require('mongodb').MongoClient;
 const config = require('./config');
 const path = require('path');
+const Joi = require("joi");
+Joi.objectId = require('joi-objectid')(Joi);
 
 const url = 'mongodb://192.168.50.9:27017';
 const dbName = 'webpage-notifier';
@@ -75,5 +77,6 @@ async function collection(collectionName) {
     return d.collection(collectionName);
 }
 
+exports.MongoDB = MongoDB;
 exports.db = db;
 exports.collection = collection;
