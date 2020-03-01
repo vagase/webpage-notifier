@@ -1,17 +1,7 @@
 const util = require('util');
 const jsonBody = util.promisify(require("body/json"));
+const {ClientError} = require('./error');
 
-class ClientError {
-    constructor(code, description, internalError) {
-        this.code = code;
-        this.description = description;
-        this.internalError = internalError;
-    }
-
-    toString() {
-        return `ClientError[${this.code}] ${this.description} ${this.internalError && this.internalError.toString()}`
-    }
-}
 
 function _writeResponse (response, httpCode, json) {
     response.setStatusCode(httpCode);
@@ -88,6 +78,5 @@ async function getRequestBody(request) {
     }
 }
 
-exports.ClientError = ClientError;
 exports.httpHandler = httpHandler;
 exports.getRequestBody = getRequestBody;

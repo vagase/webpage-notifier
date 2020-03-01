@@ -1,6 +1,6 @@
 const util = require("util");
 const {httpHandler, getRequestBody} = require("../common/httpHandler");
-const mongo = require("../common/mongo");
+const Site = require("../models/Site");
 const Joi = require("joi");
 
 const validationSchema = Joi.object( {
@@ -16,13 +16,9 @@ exports.index = httpHandler(
         const url = body.url;
         const selector = body.selector;
         const email = body.email;
-        
-        const sites = await mongo.collection("sites");
-        const ret = await sites.updateOne(
-            { url, selector, email },
-            { $set: {url, selector, email} }, 
-            { upsert: true });
 
-        return body;
+        const id = await Site.addOne(url, selector, email);
+
+        return {id};
     }
 );

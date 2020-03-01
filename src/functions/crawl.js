@@ -1,7 +1,10 @@
 const puppeteer = require('puppeteer');
 const Joi = require("joi");
-const {httpHandler, getRequestBody, ClientError} = require("../common/httpHandler");
-const mongo = require("../common/mongo");
+const {httpHandler, getRequestBody} = require("../common/httpHandler");
+const {ClientError} = require('../common/error');
+const Site = require("../models/Site");
+const CrawlHistory = require("../models/CrawlHistory");
+
 
 const validationSchema = Joi.object( {
     siteId: Joi.objectId(),
@@ -70,18 +73,14 @@ exports.index = httpHandler(
     async function (request, response, context) {    
         const body = await getRequestBody(request);
         const siteId = body.siteId;
-        const format = body.format;
-        
-        const sites = await mongo.collection("sites");
-        const record = await sites.findOne({_id: new mongo.MongoDB.ObjectID(siteId)});
-        if (!record) {
-            throw new ClientError(-1, `site not found for id: ${siteId}`);
-        }
+        const format = body.format || 'text';
 
-        const url = record.url;
-        const selector = record.selector;
+        const site = await Site.findOneById(siteId);
+        const url = site.url;
+        const selector = site.selector;
 
-        const content = await crawlPage(url, selector, format);
-        return {ret: content};
+        const payload = await crawlPage(url, selector, format);
+        const id = await CrawlHistory.addOne(siteId, format, payload);
+        return {id};
     }
 );

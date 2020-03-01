@@ -19,8 +19,7 @@ async function mongoSetup(client) {
     const db = client.db(dbName);
 
     const createIndexes = async () => {
-        const conf = config.parse(path.join(__dirname, 'mongo.config.json'));
-        const mongoIndexes = conf.indexes;
+        const mongoIndexes = config.parse(path.join(__dirname, '../models/indexes.json'));
         const collectionNames = Object.keys(mongoIndexes);
 
         for (let collectionName of collectionNames) {
