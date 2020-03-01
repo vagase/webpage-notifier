@@ -22,3 +22,14 @@ exports.findLatestTwoHistoriesForSiteId = async (siteId) => {
 
     return record;
 }
+
+exports.findLatestHistoryForSiteId = async (siteId) => {
+    const crawlHistories = await mongo.collection("crawl_histories");
+
+    const record = await crawlHistories.findOne(
+        { siteId },
+        { sort: {createdAt: -1},
+    })
+
+    return record;
+}
